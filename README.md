@@ -21,11 +21,15 @@ We heavily borrow the code from [FastDiff](https://github.com/Rongjiehuang/FastD
 ## Ciation
 If you find our work useful for your research, please consider citing the following paper:
 ```
-@article{li2025coas,
-  title={CoAS: Composite Audio Steganography Based on Text and Speech Synthesis},
+@ARTICLE{11036088,
   author={Li, Yiming and Chen, Kejiang and Wang, Yaofei and Zhang, Xin and Wang, Guanjie and Zhang, Weiming and Yu, Nenghai},
-  journal={IEEE Transactions on Information Forensics and Security},
+  journal={IEEE Transactions on Information Forensics and Security}, 
+  title={CoAS: Composite Audio Steganography Based on Text and Speech Synthesis}, 
   year={2025},
-  publisher={IEEE}
-}
+  volume={20},
+  number={},
+  pages={5978-5991},
+  keywords={Steganography;Diffusion models;Security;Speech synthesis;Receivers;Noise reduction;Gaussian noise;Entropy;Reviews;Linguistics;Steganography;provably secure;text;audio;diffusion model},
+  doi={10.1109/TIFS.2025.3579581}}
+
 ```
