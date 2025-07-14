@@ -17,18 +17,8 @@ from utils.hparams import set_hparams
 
 
 class BaseTTSInfer:
-    def __init__(self, hparams, device=None, default_save_internal_dir='audio_backend/internal', default_save_uploads_dir='audio_backend/uploads'):
+    def __init__(self, hparams, device=None):
         
-        self.default_save_internal_dir = default_save_internal_dir
-        self.default_save_uploads_dir = default_save_uploads_dir
-        os.makedirs(self.default_save_internal_dir, exist_ok=True)
-        os.makedirs(self.default_save_uploads_dir, exist_ok=True)
-        # os.makedirs('experiment/audio_test', exist_ok=True)
-        # os.makedirs('experiment/message_test', exist_ok=True)
-        os.makedirs('../capacity_test/audio_data/audio_test', exist_ok=True)
-        os.makedirs('../capacity_test/audio_data/message_test', exist_ok=True)
-
-
         self.audio_text_embeded = '' #audio text
         self.seed1 = None #seed1
         self.message_embedding = '' #secret message
