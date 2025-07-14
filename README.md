@@ -20,15 +20,15 @@ conda activate coas
 We directly use the pre-trained audio generation models provided by [Rongjie Huang](https://huggingface.co/Rongjiehuang/ProDiff/tree/main). You can also train your own model according to the instructions in [FastDiff](https://github.com/Rongjiehuang/FastDiff) and [ProDiff](https://github.com/Rongjiehuang/ProDiff) and put your checkpoints in `checkpoints/$method_name$/model_ckpt_steps_.ckpt`
 ```
 ── checkpoints/
-  ├── FastDiff
-  │  ├──config.yaml
-  │  └──model_ckpt_steps_500000.ckpt
-  ├── ProDiff
-  │  ├──config.yaml
-  │  └──model_ckpt_steps_200000.ckpt
-  └── ProDiff
-​    ├──config.yaml
-​    └──model_ckpt_steps_188000.ckpt
+    ├── FastDiff
+    │   ├──config.yaml
+    │   └──model_ckpt_steps_500000.ckpt
+    ├── ProDiff
+    │   ├──config.yaml
+    │   └──model_ckpt_steps_200000.ckpt
+    └── ProDiff_Teacher
+        ├──config.yaml
+        └──model_ckpt_steps_188000.ckpt
 ```
 
 ### Speech Recognition
