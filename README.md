@@ -13,7 +13,7 @@ The audio steganography module in CoAS is based on [FastDiff](https://github.com
 conda env create -f environment.yml 
 conda activate coas
 ```
-
+We directly use the pre-trained audio generation models provided by [Rongjie Huang](https://rongjiehuang.github.io/). You can also train your own model according to the instructions in [FastDiff](https://github.com/Rongjiehuang/FastDiff) and [ProDiff](https://github.com/Rongjiehuang/ProDiff) and put your checkpoints in `checkpoints/$method_name$/model_ckpt_steps_*.ckpt`
 ### Speech Recognition
 ### Metrics
 ## Acknowledgements

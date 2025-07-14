@@ -1,0 +1,149 @@
+N: '1000'
+T: 1000
+accumulate_grad_batches: 1
+amp: false
+audio_channels: 1
+audio_num_mel_bins: 80
+audio_sample_rate: 22050
+aux_context_window: 0
+beta_0: 1.0e-06
+beta_T: 0.01
+binarization_args:
+  reset_phone_dict: true
+  reset_word_dict: true
+  shuffle: false
+  trim_eos_bos: false
+  with_align: false
+  with_f0: false
+  with_f0cwt: false
+  with_linear: false
+  with_spk_embed: false
+  with_spk_id: true
+  with_txt: false
+  with_wav: true
+  with_word: false
+binarizer_cls: data_gen.tts.vocoder_binarizer.VocoderBinarizer
+binary_data_dir: data/binary/LJSpeech
+check_val_every_n_epoch: 10
+clip_grad_norm: 1
+clip_grad_value: 0
+cond_channels: 80
+debug: false
+dec_ffn_kernel_size: 9
+dec_layers: 4
+dict_dir: ''
+diffusion_step_embed_dim_in: 128
+diffusion_step_embed_dim_mid: 512
+diffusion_step_embed_dim_out: 512
+disc_start_steps: 40000
+discriminator_grad_norm: 1
+dropout: 0.0
+ds_workers: 1
+enc_ffn_kernel_size: 9
+enc_layers: 4
+endless_ds: true
+eval_max_batches: -1
+ffn_act: gelu
+ffn_padding: SAME
+fft_size: 1024
+fmax: 7600
+fmin: 80
+frames_multiple: 1
+gen_dir_name: ''
+generator_grad_norm: 10
+griffin_lim_iters: 60
+hidden_size: 256
+hop_size: 256
+infer: false
+inner_channels: 32
+kpnet_conv_size: 3
+kpnet_hidden_channels: 64
+load_ckpt: ''
+loud_norm: false
+lr: 2e-4
+lvc_kernel_size: 3
+lvc_layers_each_block: 4
+max_epochs: 1000
+max_frames: 1548
+max_input_tokens: 1550
+max_samples: 25600
+max_sentences: 20
+max_tokens: 30000
+max_updates: 1000000
+max_valid_sentences: 1
+max_valid_tokens: 60000
+mel_loss: l1
+mel_vmax: 1.5
+mel_vmin: -6
+mfa_version: 2
+min_frames: 0
+min_level_db: -100
+noise_schedule: ''
+num_ckpt_keep: 3
+num_heads: 2
+num_mels: 80
+num_sanity_val_steps: -1
+num_spk: 400
+num_test_samples: 0
+num_valid_plots: 10
+optimizer_adam_beta1: 0.9
+optimizer_adam_beta2: 0.98
+out_wav_norm: false
+pitch_extractor: parselmouth
+pre_align_args:
+  allow_no_txt: false
+  denoise: false
+  nsample_per_mfa_group: 1000
+  sox_resample: false
+  sox_to_wav: false
+  trim_sil: false
+  txt_processor: en
+  use_tone: true
+pre_align_cls: egs.datasets.audio.pre_align.PreAlign
+print_nan_grads: false
+processed_data_dir: data/processed/LJSpeech
+profile_infer: false
+raw_data_dir: data/raw/LJSpeech-1.1
+ref_level_db: 20
+rename_tmux: true
+resume_from_checkpoint: 0
+save_best: true
+save_codes: []
+save_f0: false
+save_gt: true
+scheduler: rsqrt
+seed: 1234
+sort_by_len: true
+task_cls: modules.FastDiff.task.FastDiff.FastDiffTask
+tb_log_interval: 100
+test_ids: []
+test_input_dir: ''
+test_mel_dir: ''
+test_num: 100
+test_set_name: test
+train_set_name: train
+train_sets: ''
+upsample_ratios:
+- 8
+- 8
+- 4
+use_pitch_embed: false
+use_spk_embed: false
+use_spk_id: false
+use_split_spk_id: false
+use_wav: true
+use_weight_norm: true
+use_word_input: false
+val_check_interval: 2000
+valid_infer_interval: 10000
+valid_monitor_key: val_loss
+valid_monitor_mode: min
+valid_set_name: valid
+vocoder_denoise_c: 0.0
+warmup_updates: 8000
+weight_decay: 0
+win_length: null
+win_size: 1024
+window: hann
+word_size: 30000
+work_dir: checkpoints/FastDiff
