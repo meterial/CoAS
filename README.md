@@ -14,6 +14,8 @@ In the CoAS system, you can choose any provably secure linguistic steganography.
 ### Audio Steganography
 The audio steganography module in CoAS is based on [FastDiff](https://github.com/Rongjiehuang/FastDiff) and [ProDiff](https://github.com/Rongjiehuang/ProDiff), and implemented in the text-to-speech (TTS) task.
 ```
+git clone https://github.com/meterial/CoAS.git
+cd CoAS
 conda env create -f environment.yml 
 conda activate coas
 ```
