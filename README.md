@@ -32,19 +32,20 @@ We directly use the pre-trained audio generation models provided by [Rongjie Hua
         ├──config.yaml
         └──model_ckpt_steps_188000.ckpt
 ```
-##### Message embedding
+#### Message embedding
 In the message embedding phase of the CoAS, in addition to the secret message, the sender also need the audio text and random number seed used in the provably secure linguisitc steganography above.
 ```
 python inference/CoAS.py embed --text $audio_text$ --message $secret_message$ --seed $random_number_seed$
 ```
 The stego audio will be stored in the folder `inferout/$audio_text$.wav`. 
-##### Message Extraction
+#### Message Extraction
 During the message extraction phase of CoAS, the receiver needs to use the same audio text and random number seed as the sender to ensure correct extraction.
 ```
 python inference/CoAS.py extract --text $audio_text$ --audio $stego_audio_path$ --seed $random_number_seed$
 ```
-
+The audio text can be recognised by the following speech recognition method, and the random number seed can be extracted from the audio text by the above provably secure linguisitc steganography algorithm.
 ### Speech Recognition
+
 ### Metrics
 
 ## Acknowledgements
