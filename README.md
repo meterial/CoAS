@@ -44,12 +44,20 @@ During the message extraction phase of CoAS, the receiver needs to use the same 
 python inference/CoAS.py extract --text $audio_text$ --audio $stego_audio_path$ --seed $random_number_seed$
 ```
 The audio text can be recognised by the following speech recognition method, and the random number seed can be extracted from the audio text by the above provably secure linguisitc steganography algorithm.
-### Speech Recognition
 
-### Metrics
+### Speech Recognition
+In the CoAS, we used existing speech recognition models such as [parakeet](https://huggingface.co/nvidia/parakeet-tdt-0.6b-v2) and [whisper](https://huggingface.co/openai/whisper-large-v3). You can simply run the speech recognition by running the following command.
+```
+python speech_reco/asr.py parakeet -a $audio$
+python speech_reco/asr.py whisper -a $audio$
+```
+### Additional Notes
+- 
+- 
+- 
 
 ## Acknowledgements
-We heavily borrow the code from [FastDiff](https://github.com/Rongjiehuang/FastDiff), [ProDiff](https://github.com/Rongjiehuang/ProDiff) and [Discop](https://github.com/comydream/Discop). We appreciate the authors for sharing their code.
+We heavily borrow the code from [FastDiff](https://github.com/Rongjiehuang/FastDiff) and [ProDiff](https://github.com/Rongjiehuang/ProDiff). We appreciate the authors for sharing their code.
 
 ## Ciation
 If you find our work useful for your research, please consider citing the following paper:

@@ -114,25 +114,20 @@ if __name__ == '__main__':
         description="A command-line tool for audio steganography using diffusion models."
     )
     
-    # 2. 创建子命令解析器
     subparsers = parser.add_subparsers(dest='command', required=True, help='Available commands')
 
-    # 3. 创建 'embed' 命令的解析器
     parser_embed = subparsers.add_parser('embed', help='Embed a secret message into audio.')
     parser_embed.add_argument('-t', '--text', type=str, help='The audio text to generate from.')
     parser_embed.add_argument('-m', '--message', type=str, help='The secret message to embed.')
     parser_embed.add_argument('-s', '--seed', type=int, help='The random seed for embedding (acts as a key).')
 
-    # 4. 创建 'extra' 命令的解析器
     parser_extra = subparsers.add_parser('extract', help='Extract a secret message from audio.')
     parser_extra.add_argument('-a', '--audio', type=str, help='Path to the steganographic audio file.')
     parser_extra.add_argument('-s', '--seed', type=int, help='The random seed for extraction (acts as a key).')
     parser_extra.add_argument('-t', '--text', type=str, default=None, help='The original audio text.')
 
-    # 5. 解析命令行参数
     args = parser.parse_args()
 
-    # 6. 根据不同的命令调用相应的函数
     if args.command == 'embed':
         print("--- Running Embedding ---")
         output_path = embed(args.text, args.message, args.seed1)
