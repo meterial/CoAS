@@ -15,7 +15,6 @@ import pandas as pd
 from utils.hparams import set_hparams
 from utils.hparams import hparams as hp
 from utils.audio import save_wav
-from utils.zip import compress_string_to_bits, decompress_bits_to_string
 
 
 class DiffusionInfer(BaseTTSInfer):
@@ -84,7 +83,8 @@ def embed(text,message,seed1):
     stego = DiffusionInfer(hp)
 
     inp = {'text': text}
-    message_binary_string = compress_string_to_bits(message) 
+
+    message_binary_string = ''.join([bin(ord(char))[2:].zfill(8) for char in message])
     message_binary_list = list(map(int, message_binary_string))
 
     out = stego.infer_once(inp=inp, message=message, seed1=seed1, compress_messbits = message_binary_list)
@@ -105,9 +105,9 @@ def extra(audio, seed2, text):
     message_bits_extra = stego.infer_once_extra(inp,audio=audio,seed2=seed2)
 	
     binary_string = ''.join(str(bit) for bit in message_bits_extra)
-    decompress_str = decompress_bits_to_string(binary_string)
+    message_str = ''.join([chr(int(binary_string[i:i+8], 2)) for i in range(0, len(binary_string), 8)])
 
-    return decompress_str
+    return message_str
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
