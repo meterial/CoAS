@@ -9,7 +9,7 @@ We propose Composite Audio Steganography (CoAS), a method based on text and spee
 We will gradually split and implement the modules used in the CoAS system.
 
 ### Provably Secure Linguistic Steganography
-In the CoAS system, you can choose any provably secure linguistic steganography. We will not go into details here, recommending one of them, [Discop](https://github.com/comydream/Discop).
+In the CoAS system, you can choose any provably secure linguistic steganography to embed the random number seed into the audio text. We will not go into details here, recommending one of them, [Discop](https://github.com/comydream/Discop).
 
 ### Audio Steganography
 The audio steganography module in CoAS is based on [FastDiff](https://github.com/Rongjiehuang/FastDiff) and [ProDiff](https://github.com/Rongjiehuang/ProDiff), and implemented in the text-to-speech (TTS) task.
@@ -31,6 +31,17 @@ We directly use the pre-trained audio generation models provided by [Rongjie Hua
     └── ProDiff_Teacher
         ├──config.yaml
         └──model_ckpt_steps_188000.ckpt
+```
+##### Message embedding
+In the message embedding phase of the CoAS, in addition to the secret message, the sender also need the audio text and random number seed used in the provably secure linguisitc steganography above.
+```
+python inference/CoAS.py embed --text $audio_text$ --message $secret_message$ --seed $random_number_seed$
+```
+The stego audio will be stored in the folder `inferout/$audio_text$.wav`. 
+##### Message Extraction
+During the message extraction phase of CoAS, the receiver needs to use the same audio text and random number seed as the sender to ensure correct extraction.
+```
+python inference/CoAS.py extract --text $audio_text$ --audio $stego_audio_path$ --seed $random_number_seed$
 ```
 
 ### Speech Recognition

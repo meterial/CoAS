@@ -124,7 +124,7 @@ if __name__ == '__main__':
     parser_embed.add_argument('-s', '--seed', type=int, help='The random seed for embedding (acts as a key).')
 
     # 4. 创建 'extra' 命令的解析器
-    parser_extra = subparsers.add_parser('extra', help='Extract a secret message from audio.')
+    parser_extra = subparsers.add_parser('extract', help='Extract a secret message from audio.')
     parser_extra.add_argument('-a', '--audio', type=str, help='Path to the steganographic audio file.')
     parser_extra.add_argument('-s', '--seed', type=int, help='The random seed for extraction (acts as a key).')
     parser_extra.add_argument('-t', '--text', type=str, default=None, help='The original audio text.')
@@ -137,7 +137,7 @@ if __name__ == '__main__':
         print("--- Running Embedding ---")
         output_path = embed(args.text, args.message, args.seed1)
         print(f"Embedding complete. Stego audio saved to: {output_path}")
-    elif args.command == 'extra':
+    elif args.command == 'extract':
         print("--- Running Extraction ---")
         extracted_message = extra(args.audio, args.seed2, args.text)
         print(f"Extraction complete. The secret message is: '{extracted_message}'")
