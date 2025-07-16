@@ -219,35 +219,7 @@ def sampling_given_noise_schedule(
     
     seed1=int(seed1)
 
-    payload = 12
-    # text = message
-    # print(f'嵌入的消息长度:{len(text)}')
-
-    # text = text + '~'
-
-    # pad_times = 0
-    # while not ((len(text)+pad_times)*8/payload).is_integer():
-    #     pad_times += 1
-
-    # for pad in range(pad_times):
-    #     text = text + '~'
-
-    # print(f'填充后的消息长度:{len(text)}')
-    
-
-    # binary_list = []
-
-    # for char in text:
-    #     ascii_value = ord(char)
-    #     if ascii_value > 127:
-    #         continue
-    #     binary_value = format(ascii_value, '08b') # 将ASCII码值转换为8位二进制数
-    #     for bit in binary_value:
-    #         binary_list.append(int(bit)) # 将二进制数中的每个位转换为数字并添加到列表中
-    
-    # print(f'嵌入的二进制长度:{len(binary_list)}')
-
-    print(f'嵌入的二进制压缩串长度:{len(compress_messbits)}')
+    payload = 4
 
     compress_messbits.extend([0]*4)
 
@@ -258,29 +230,10 @@ def sampling_given_noise_schedule(
         pad_times += 1
 
     compress_messbits.extend([0]*pad_times)
-
-    print(f'填充后嵌入的二进制压缩串长度:{len(compress_messbits)}')
             
     message_bits = compress_messbits
     
-    start_time = time.perf_counter()
-    
     mess_embd = steg_sample_gaussian(size, message_bits=message_bits, payload=payload)#消息正向映射
-    # mess_embd = std_normal(size)
-    
-    end_time = time.perf_counter()
-
-    print(f'正向映射时间:{end_time-start_time:.4f}s')
-
-    # print(f'映射的向量长度:{mess_embd.shape}')
-#
-    # with open('debug.txt', 'a') as f:
-    #     f.write('映射向量:')
-    #     for item in mess_embd:
-    #         f.write(f"{item}")
-    #     f.write('\n')
-
-    # print(seed1)
 
     with torch.no_grad():
         random.seed(seed1)
@@ -297,12 +250,6 @@ def sampling_given_noise_schedule(
             epsilon_theta = net((x, condition, diffusion_steps,))
             if n==1:#x1=x2...嵌入
                 x_2=copy.deepcopy(x)
-                # with open('debug.txt', 'a') as f:
-                #     f.write('发送方x2:')
-                #     for item in x_2:
-                #         f.write(f"{item}")
-                #     f.write('\n')
-
                 x -= beta_infer[n] / torch.sqrt(1 - alpha_infer[n] ** 2.) * epsilon_theta
                 x/= torch.sqrt(1 - beta_infer[n])
                 x=x+sigma_infer[n]*mess_embd
@@ -319,8 +266,6 @@ def sampling_given_noise_schedule(
                 x -= beta_infer[n] / torch.sqrt(1 - alpha_infer[n] ** 2.) * epsilon_theta
                 x/= torch.sqrt(1 - beta_infer[n])
                 x=x+sigma_infer[n]*std_normal(size)
-
-        print('audio1:',x_1.squeeze()[:20],torch.max(torch.abs(x_1)).item(),x_1.dtype,x_1.size())
 
     return x_1
 
@@ -376,13 +321,11 @@ def sampling_given_noise_schedule_extra(
 
     # N may change since alpha_infer can be out of the range of alpha
     N = len(steps_infer)
+    
     seed2=int(seed2)
 
-    payload = 12
-
-
-    # print(seed2)
-
+    payload = 4
+    
     with torch.no_grad():
         random.seed(seed2)
         np.random.seed(seed2)
@@ -393,6 +336,7 @@ def sampling_given_noise_schedule_extra(
         torch.backends.cudnn.benchmark = False
 
         y = std_normal(size)
+        
         for n in tqdm(range(N - 1, 0, -1),desc='FastDiff sample time step'):#接收方准备知识
             diffusion_steps = (steps_infer[n] * torch.ones((size[0], 1))).cuda()
             epsilon_theta = net((y, condition, diffusion_steps,))
@@ -403,32 +347,19 @@ def sampling_given_noise_schedule_extra(
             if n==2:
                 y_2 = y.clone()
             if n==1:
-                # theta_y_2=copy.deepcopy(epsilon_theta)
+
                 theta_y_2 = epsilon_theta.clone()
 
         _, x_1 = wavfile.read(audio)
         x_1 = x_1.astype(np.float32)
-        # x_1 /= 32767
-        # x_1 = x_1.astype(np.float16)
 
-        # x_1 , sr = librosa.load(audio, sr=None)
-        # factor = 10000
-        # x_1 = np.where(x_1>0, np.ceil(x_1 * factor) / factor, np.floor(x_1 * factor) / factor)
         x_1 = torch.from_numpy(x_1)
-        # x_1 = torch.round(x_1 * 10000) / 10000
+
         x_1 = x_1.cuda()
-        print('audio2:',x_1[:20],torch.max(torch.abs(x_1)).item(),x_1.dtype,x_1.size())
 
         mess_extra=y_2-beta_infer[1]*theta_y_2/torch.sqrt(1-alpha_infer[1]**2)
         mess_extra=x_1-1/torch.sqrt(1-beta_infer[1])*mess_extra
         mess_extra=mess_extra/sigma_infer[1]
-
-        # print(f'提取的向量长度:{mess_extra.shape}')
-        # with open('debug.txt', 'a') as f:
-        #     f.write('提取向量:')
-        #     for item in mess_extra:
-        #         f.write(f"{item}")
-        #     f.write('\n')
 
         mess_extrabits=extra_sample_gaussian(mess_extra,payload=payload)
 
@@ -444,19 +375,7 @@ def sampling_given_noise_schedule_extra(
             if len(window) == 100 and list(window) == [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]:
                 extra_bits = extra_bits[:-104]
                 break
-        # binary_string = ''.join([str(bit) for bit in mess_extrabits]) # 将列表中的数字转换为字符串
-        # byte_strings = [binary_string[i:i+8] for i in range(0, len(binary_string), 8)] # 将字符串分割为8位一组的子串
 
-        # ascii_string = ''
-        # for byte in byte_strings:
-        #     ascii_value = int(byte, 2) # 将二进制字符串转换为十进制数
-        #     if chr(ascii_value)=='~':
-        #         break
-        #     ascii_string += chr(ascii_value) # 将十进制数转换为对应的ASCII字符
-
-        # print(f'提取的消息长度:{len(ascii_string)}')
-        print(f'提取的二进制压缩串长度:{len(extra_bits)}')
-        
     return extra_bits
 
 def noise_scheduling(net, size, diffusion_hyperparams, condition=None, ddim=False):

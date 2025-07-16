@@ -184,7 +184,6 @@ class BaseTTSInfer:
 
     def infer_once(self, inp, message, seed1, compress_messbits):
         inp = self.preprocess_input(inp)
-        print(f'inp:{inp}')
         output = self.forward_model(inp,message=message,seed1=seed1,compress_messbits=compress_messbits)
         output = self.postprocess_output(output=output)
         return output

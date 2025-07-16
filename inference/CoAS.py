@@ -7,13 +7,11 @@ from utils.hparams import hparams
 from modules.ProDiff.model.ProDiff import GaussianDiffusion
 from usr.diff.net import DiffNet
 import os
+import argparse
 import numpy as np
 from functools import partial
 import random
-from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline
 import pandas as pd
-import librosa
-# from speech_reco.sr import speech_reco
 from utils.hparams import set_hparams
 from utils.hparams import hparams as hp
 from utils.audio import save_wav
@@ -56,14 +54,11 @@ class DiffusionInfer(BaseTTSInfer):
         torch.backends.cudnn.deterministic = True
         torch.backends.cudnn.benchmark = False
         sample = self.input_to_batch(inp)
-        print('sample:', sample)
         txt_tokens = sample['txt_tokens']  # [B, T_t]
-        print('txt_tokens:', txt_tokens.size(), txt_tokens)
 
         with torch.no_grad():   
             output = self.model(txt_tokens, infer=True)
             mel_out = output['mel_out']
-            print('mel_out:', mel_out.size(), mel_out)
             wav_out = self.run_vocoder(mel_out,message=message,seed1=seed1,compress_messbits=compress_messbits)
         wav_out = wav_out.squeeze().cpu().numpy()
         return wav_out
@@ -82,11 +77,8 @@ class DiffusionInfer(BaseTTSInfer):
             output = self.model(txt_tokens, infer=True)
             mel_out = output['mel_out']
             bits_out = self.run_vocoder_extra(mel_out,audio=audio,seed2=seed2)
-        # wav_out = wav_out.squeeze().cpu().numpy()
         return bits_out
     
-#     DiffusionInfer.example_run()
-# 单独使用时的函数
 def embed(text,message,seed1):
     set_hparams()
     stego = DiffusionInfer(hp)
@@ -99,24 +91,55 @@ def embed(text,message,seed1):
     audio_stego = f'infer_out/{text.split()[0]}_stego.wav'
 
     save_wav(out, audio_stego, hp['audio_sample_rate'])
+
     return audio_stego
 
 
-def extra(audio, seed2, text=None):
-    # if text == None:
-    #     # sr_text = speech_reco(audio)
-    #     message_extra = DiffusionInfer.extra_run(audio=audio, text=sr_text, seed2=seed2)
-    #     return sr_text,message_extra
-    # else:
-        message_extra = DiffusionInfer.extra_run(audio=audio, text=text, seed2=seed2)
-        return text,message_extra
-    
+def extra(audio, seed2, text):
+
+    set_hparams()
+    stego = DiffusionInfer(hp)
+
+    inp = {'text': text}
+
+    message_bits_extra = stego.infer_once_extra(inp,audio=audio,seed2=seed2)
+	
+    binary_string = ''.join(str(bit) for bit in message_bits_extra)
+    decompress_str = decompress_bits_to_string(binary_string)
+
+    return decompress_str
+
 if __name__ == '__main__':
-    pre_message = '''3D Gaussian Splatting (3DGS) has already become the emerging research focus in the fields of 3D scene reconstruction and novel view synthesis. Given that training a 3DGS requires a significant amount of time and computational cost, it is crucial to protect the copyright, integrity, and privacy of such 3D assets. Steganography, as a crucial technique for encrypted transmission and copyright protection, has been extensively studied. However, it still lacks profound exploration targeted at 3DGS. Unlike its predecessor NeRF, 3DGS possesses two distinct features: 1) explicit 3D representation; and 2) real-time rendering speeds. These characteristics result in the 3DGS point cloud files being public and transparent, with each Gaussian point having a clear physical significance. Therefore, ensuring the security and fidelity of the original 3D scene while embedding information into the 3DGS point cloud files is an extremely challenging task. To solve the above-mentioned issue, we first propose a steganography framework for 3DGS, dubbed GS-Hider, which can embed 3D scenes and images into original GS point clouds in an invisible manner and accurately extract the hidden messages. Specifically, we design a coupled secured feature attribute to replace the original spherical harmonics coefficients and then use a scene decoder and a message decoder to disentangle the original RGB scene and the hidden message. Extensive experiments demonstrated that the proposed GS-Hider can effectively conceal multimodal messages without compromising rendering quality and possesses exceptional security, robustness, capacity, and flexibility.'''
+    parser = argparse.ArgumentParser(
+        description="A command-line tool for audio steganography using diffusion models."
+    )
+    
+    # 2. 创建子命令解析器
+    subparsers = parser.add_subparsers(dest='command', required=True, help='Available commands')
 
-    print(embed(text='The steganography method of COAs system proposed by us is not limited to discop.', message = pre_message, seed1=64))
+    # 3. 创建 'embed' 命令的解析器
+    parser_embed = subparsers.add_parser('embed', help='Embed a secret message into audio.')
+    parser_embed.add_argument('-t', '--text', type=str, help='The audio text to generate from.')
+    parser_embed.add_argument('-m', '--message', type=str, help='The secret message to embed.')
+    parser_embed.add_argument('-s', '--seed', type=int, help='The random seed for embedding (acts as a key).')
 
-# print(extra(audio='infer_out/This_stego.wav',text='This is a test audio', seed2=64))
+    # 4. 创建 'extra' 命令的解析器
+    parser_extra = subparsers.add_parser('extra', help='Extract a secret message from audio.')
+    parser_extra.add_argument('-a', '--audio', type=str, help='Path to the steganographic audio file.')
+    parser_extra.add_argument('-s', '--seed', type=int, help='The random seed for extraction (acts as a key).')
+    parser_extra.add_argument('-t', '--text', type=str, default=None, help='The original audio text.')
 
-# print(extra(audio='infer_out/When_stego.wav', seed2=64))
+    # 5. 解析命令行参数
+    args = parser.parse_args()
+
+    # 6. 根据不同的命令调用相应的函数
+    if args.command == 'embed':
+        print("--- Running Embedding ---")
+        output_path = embed(args.text, args.message, args.seed1)
+        print(f"Embedding complete. Stego audio saved to: {output_path}")
+    elif args.command == 'extra':
+        print("--- Running Extraction ---")
+        extracted_message = extra(args.audio, args.seed2, args.text)
+        print(f"Extraction complete. The secret message is: '{extracted_message}'")
+
 
